@@ -1,0 +1,17 @@
+
+$Id: 00README,v 1.1 2000/01/15 01:45:23 edwardc Exp $
+
+本目錄存放 Firebird BBS 相關文件，請詳細閱讀各文件再安裝系統。
+
+本目錄檔案內容說明：
+
+    Firebird-30		Firebird BBS 3.0 完整安裝文件
+    Quick_Install	Firebird BBS 3.0 快速安裝文件
+    Admin_Menual	管理者參考手冊
+    BBCall		B.B.Call 使用手冊
+    Upgrading		Firebird BBS 3.0 Source 更新方式簡介
+    TW_NewsGroup_List	臺灣地區 News Group 列表
+    NoCem		NoCem 快速使用手冊
+    FAQ 		常見問題收集
+    Core_Team		發展人員列表
+    example/		BBS 相關設定範例檔

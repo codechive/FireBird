@@ -1,0 +1,42 @@
+# Makefile of mail2bbs for Firebird BBS 3.0
+#
+# $Id: Makefile.in,v 1.2 2001/08/20 01:55:20 edwardc Exp $
+
+CC = @CC@
+BBS_LIB	= ../../lib
+CFLAGS = -I../../include
+INSTALLDIR = @BBS_HOME@/bin
+PERL = @perl@
+DOMAIN = @DOMAIN@
+
+PROGNAME = mail2bbs
+CFILE	 = mail2bbs.c qp_conv.c mail-list.c ../../src/record.c
+
+COBJS	 = mail2bbs.o qp_conv.o mail-list.o ../../src/record.o 
+
+.SUFFIXES: .o .c
+
+.c.o:	;	$(CC) $(CFLAGS) $(DEFINES) -c $*.c
+
+all: mail2bbs fillperl install
+
+mail2bbs: ${COBJS}
+	$(CC) $(CFLAGS) -DDOMAIN_NAME=\"'$(DOMAIN)'\" -DBBSNAME=\"'@BBS_CNAME@'\" \
+	-Xlinker -Bstatic ${COBJS} -o mail2bbs -L${BBS_LIB} -lBBS
+
+install: mail2bbs
+	install -g bbs -m 4750 -o bbs mail2bbs $(INSTALLDIR)
+	install -g bbs -m  750 -o bbs bbsmail     $(INSTALLDIR)
+	install -g bbs -m  750 -o bbs mailgate.pl $(INSTALLDIR)
+
+fillperl:
+	rm -fr bbsmail mailgate.pl
+	sed -e "s:@PERL@:${PERL}:" bbsmail.in | \
+	sed -e "s:@BBSUID@:@BBS_UID@:" | \
+	sed -e "s:@BBSGID@:@BBS_GID@:" | \
+	sed -e "s:@BBSHOME@:@BBS_HOME@:" > bbsmail
+	sed -e "s:@PERL@:${PERL}:" mailgate.pl.in | \
+	sed -e "s:@BBSDOMAIN@:$(DOMAIN):" > mailgate.pl
+
+clean:
+	rm -fr *.o *~ mail2bbs

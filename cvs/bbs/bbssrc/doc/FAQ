@@ -1,0 +1,123 @@
+$Id: FAQ,v 1.3 2002/01/12 10:49:46 chinsan Exp $
+
+	本 FAQ 收錄網路上重複出現率高的問題，並將不時更新。如果 FAQ 有寫錯
+	或您覺得有更好的說明方式，請寄信到：biboman.bbs@bbs.seed.net.tw。
+
+    Q: 如何增加 pty 個數到 256 個？
+
+    A: 如果你用 Solaris 不必理會這個問題，Linux 似乎也不必(目前不確定)。
+       如果你用 FreeBSD，請修改你的 kernel config 檔案，搜尋 pty 這字串，找
+       到後，請把後面的數字(預設是 16)改成 256，然後重新 make kernel，並到
+       /dev 下執行：
+
+	# /dev/MAKEDEV pty0 pty1 pty2 pty3 pty4 pty5 pty6 pty7
+
+       上述兩個步驟做好後重開機即可。
+
+
+    Q: 什麼是 bbsrf、standalone telnetd、in.zbbsd、與 bbsd？
+
+    A: 早期要安裝 bbs 時，需將 bbs 的 shell 改成 bbsrf，由 bbsrf 來呼叫 bbs
+       bbs 主程式；而 standalone telnetd 則是配合 bbsrf，用來取代系統原本的
+       telnetd，這樣登入 bbs 時就不會看到系統的 login 提示，省去輸入 bbs 帳
+       號這道手續，對系統安全亦有提昇。後來 in.zbbsd 發展出來，取代 stand-
+       alone telnetd 與 bbsrf 的功能，bbs 帳號的 shell 不必設定成 bbsrf，提
+       昇速度，也改善安全問題(bbsrf 需 set root uid)。bbsd 則跟 in.zbbsd 一
+       樣取代 bbsrf、standalone telnetd，但是不會用到 tty 來做 I/O，速度又
+       更快了。使用 bbsd，您就無須理會上面提到增加 tty 到 256 的問題，您可
+       以任意設定同時上線人數到數百甚至數千，唯一要注意的是您的硬體是否能夠
+       負荷。
+       
+
+    Q: 不知道為什麼，進站到好友列表就掛掉了？
+
+    A: 目前最有可能發生這種問題的就是活動看板了，預設的活動看板總行數是 80
+       行，若一個活動看板佔了七行，則最多可放 11 個活動看板，超過了就會在進
+       站時當住不動。當您遇到這個問題後，請依以下步驟解決：
+
+       一、以 bbs 身分登入系統
+
+       二、備份 ~bbs/boards/notepad/.DIGEST
+
+       三、砍掉 ~bbs/boards/notepad/.DIGEST
+
+       四、進站重新設定活動看板
+
+       若要增加活動看板的總行數或是寬度，請修改 bbssrc/include/bbs.h 中的
+       ACBOARD_MAXLINE 以及 ACBOARD_BUFSIZE 這兩個設定。
+
+
+    Q: 灌好 BBS，隔天會無法進站，過了幾分鐘後就好了，這是什麼問題？
+
+    A: account 程式會讀取 ~bbs/usies，然後做出圖表(countusr)，以供 bbs 主程
+       式讀取。晚上十二點後，countusr 被更名成 countusr.last，或是長時間沒
+       人上站，就會造成無法進站，請等個幾分鐘，或修改 crontab，把 mv 指令改
+       成 cp 即可解決。往後的 SNAP 將會更新這個問題。
+
+
+    Q: 使用 Red Hat 6.x 安裝 Firebird 3.0，在 configure 時出現以下訊息怎麼
+       辦：
+
+	checking for -ltermcap ... no
+	ERR: i can't compile without libtermcap !!
+
+    A: 請執行 Red Hat 6.x 的安裝程式，選擇 Update，然後仔細找出 termcap 的
+       選項，安裝之，然後再安裝 bbs。
+
+
+    Q: 當超過 256 人時，用 bbs 進系統時，出現 fork: Resource temporarily 
+       unavailable 且 cron 的內容都不跑了，我該怎麼讓我的 BBS 能正常地超過
+       256 人呢？( JESUS.bbs@bbs.nknu.edu.tw、Biboman 提供)
+
+    A: FreeBSD：
+	  如果是 FreeBSD，請修改 Kernel 設定檔的 maxusers，算法是 
+	  maxusers * 16 + 20，並重新 make kernel。
+
+       Linux：
+	  /usr/src/linux/include/linux/tasks.h 裡
+
+	#define NR_TASKS        2048
+	/* On x86 Max 4092, or 4090 w/APM configured. *
+	#define MAX_TASKS_PER_USER (NR_TASKS/2)
+	#define MIN_TASKS_LEFT_FOR_ROOT 4
+	這邊可以改最大 proccess數...
+
+	還有這個檔limits.h
+	#define OPEN_MAX        1024    /* # open files a process may have */
+	最大開啟檔案數...
+
+
+    Q: 如果要改中英文的站名 及 Origin 的話，要在哪幾個設定檔改？
+       若需重新 compiler 程式的話，會不會影響 board 上文章及 user 的 mail？
+
+    A: 到 bbssrc (or fb3src for CVS users) 目錄下，重新 configure 一次，然
+       後 make clean update，然後重跑 bbsd。
+
+       注意！板上的舊文章及使用者信件不會改動，新 post 的文章下面的 origin
+       才會顯示新的站名。
+
+
+    Q: 請問，我下方那些前面那些為零計數的討論區，在進入還是有很多文章，
+       可是前面卻顯示零，且在為零的討論區中不能發表文章，怎麼辦呢？
+        0  ◇ Config             [系統] ● 學術網路ＢＢＳ架構討論區    SYSOP
+        0  ◇ Firebird           [系統] ● 燒鳥ＢＢＳ討論區          r SYSOP
+        0  ◇ Firebird_PUG       [系統] ● 燒鳥 Power User Group     r SYSOP
+
+    A: 應該是用了非 bbs 身分來執行 expire 或者下了錯誤的參數
+       先用 root 權限下 chown -R bbs:bbs /home/bbs
+       再用 bbs 身分下 remake <boardname> 就可以解決了。
+       註：有關版名請記得大小寫之分。
+
+
+    Q: 請問 << 本文被 SYSOP 於 5/20 20:04:49 刪除 >> 要怎樣才能讓它不出現？
+
+    A: 修改 /home/bbs/etc/sysconf.ini 裡面有
+			:
+       		KEEP_DELETED_HEADER     = 1
+			:
+       設定被砍文章是否保留標題(0表不保留, 1則代表保留)
+       注意！修改完 sysconf.ini 後，請至 BBS 主選單按 Shift + ~ 
+	     或者砍掉 /home/bbs/sysconf.img，以便更新系統設定。
+       另外當 expire (砍過期文章程式) 被執行之後，
+       所有版面上有關的 << 本文被 xxx 刪除 >> 也會一併清除之。
+          

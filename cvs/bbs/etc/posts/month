@@ -1,0 +1,8 @@
+
+
+    此為熱門標題統計檔，由 poststat 程式自動產生。
+
+    請參閱 bbssrc/doc/Firebird-30，編輯 bbssrc/util/local_utl
+    下的相關程式，並把 crontab 設好。
+
+    crontab 的編寫可參考 bbssrc/doc/example 目錄下的 cron.bbs。

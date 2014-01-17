@@ -1,0 +1,40 @@
+#  Makefile for local utility tool kit
+# 
+#  $Id: Makefile.in,v 1.4 2002/01/05 08:24:30 edwardc Exp $
+#
+
+CC       = @CC@
+CFLAGS   = @CFLAGS@ -I../../include
+BBSHOME	 = @BBS_HOME@
+
+UTILITY  = account averun bbstop bbspop3d birthday horoscope \
+		   newacct poststat remake usage showuser
+
+.c.o:   ;   $(CC) $(CFLAGS) -c $*.c
+
+all: $(UTILITY)
+
+install: $(UTILITY)
+	cp $(UTILITY) $(BBSHOME)/bin
+
+clean:
+	rm -fr *.o *.BAK *.log $(UTILITY) *core* DEAD* *~
+
+bbspop3d:
+	$(CC) $(CFLAGS) -o bbspop3d bbspop3d.c @libCRYPT@
+
+bfinger: BROKEN #bfinger.c ../../src/modetype.c 
+#	$(CC) $(CFLAGS) -o bfinger bfinger.c ../../src/modetype.c
+
+http-finger: BROKEN #http-finger.c ../../src/modetype.c 
+#	$(CC) $(CFLAGS) -o http-finger http-finger.c ../../src/modetype.c
+
+remake: remake.c ../../src/record.c
+	$(CC) $(CFLAGS) -o remake remake.c ../../src/record.c -L../../lib -lBBS
+
+usage: usage.c ../../src/record.c
+	$(CC) $(CFLAGS) -o usage usage.c ../../src/record.c -L../../lib -lBBS
+
+BROKEN:
+	@echo "due to bbsd functionality, programs that use tty are marked as broken"
+	@echo "so this program will not be compiled. sorry"

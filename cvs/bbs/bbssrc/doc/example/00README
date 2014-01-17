@@ -1,0 +1,9 @@
+$Id: 00README,v 1.1 2000/01/15 01:45:23 edwardc Exp $
+	
+	example/ 檔案說明
+	
+	sendmail.cf	: 給 BBS 用的 sendmail.cf 範例
+	cron.bbs	: BBS 的範例 crontab 
+	expire.ctl	: expire.ctl 範例檔（應放在 $BBSHOME/etc/ 下）
+	startbbs.sh	: 啟動 bbs 全套服務的 script。
+	ctm.sh	        : 一次更新多個 ctm 檔的 shell script

@@ -1,0 +1,47 @@
+$Id: NoCem,v 1.3 2001/01/30 09:18:43 biboman Exp $
+
+    前言：
+
+	NoCem 簡介請看 ~bbssrc/util/innbbsd 下的 NOCEM.1 NOCEM.2 NOCEM.3 以
+	及 README.nocem 等幾篇介紹，在此不再贅述。
+
+	※目前 NoCem 仍在測試中，我們不保證使用 NoCem 後轉信能正常執行。
+
+    使用方式：
+
+	一、請自行好 pgp 加密程式，目前最新版本是 5.0i。FreeBSD 使用者可以
+	    到 /usr/ports/security/pgp5 安裝。
+
+	二、安裝好 pgp5 後，以 bbs 登入，執行 pgpk -g，依指示設定好 bbs 的
+	    pgp 密碼[註]，然後執行以下兩個動作將兩個鑰匙檔加入到 bbs 的鑰匙
+	    圈(key ring)上：
+
+	    pgpk -a http://news.civil.ncku.edu.tw/pubkey.asc
+	    pgpk -a http://newsgate.nctu.edu.tw/~news/nocem-key
+
+	    如果上述動作失敗，請執行：
+
+	    pgpk -a finger news@news.civil.ncku.edu.tw
+	    pgpk -a finger news@newsgate.nctu.edu.tw
+
+	三、在 newsfeeds.bbs 與 active 檔中加入 tw.bbs.admin 的 entry，基本
+	    上各大 News 都有 tw.bbs.admin。建議將 tw.bbs.admin 的 active 檔
+	    獨立出來，不與一般 newsgroups 混在一起，這樣可以設定 black.list
+	    來擋不必要的(非 Notify)的信件。
+
+	    ※tw.bbs.admin 的設定最好放在 active 檔的最後面。
+
+	四、設定好後，抓取 tw.bbs.admin 的信件。等機器收到 NCM 的 notify 後
+	    ，會在 ~bbs/innd 裡面找尋 ncmperm.bbs，若無此檔則自動建立，然後
+	    把找到的 Issuer 寫進去。預設是不接受該 Issuer 的 Notify。
+
+        五、使用 vi、joe 等可以辨識 Tab 的編輯器編輯 ncmperm.bbs，把 Issuer
+	    後面的 no 改成 yes，這樣以後 innbbsd 收到發出的 Notify 就會自動
+	    處理垃圾信了。
+
+	六、若有新的 Issuer 加入到 ncmperm.bbs，而您要接受他的 Notify，除了
+	    按照第五點來編輯 ncmperm.bbs，您還需將該 Issuer 的 pgp keyfile
+	    加入到您的 key ring，這樣該 Issuer 的 Notify 才會生效。
+
+
+註：pgpk 的用法請參考 http://www.sinica.edu.tw/cc/netsrv/dawei/pgp5.0/

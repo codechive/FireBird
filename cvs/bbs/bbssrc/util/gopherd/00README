@@ -1,0 +1,26 @@
+$Id: 00README,v 1.1 2000/01/15 01:45:33 edwardc Exp $
+
+	Firebird BBS 的 Gopher Daemon，可以在遠端以 gopher client
+	來讀取 BBS 的精華區，無須 telnet 進站，適合網路速度不快，
+	又只需要特定資料者。
+
+
+    一、安裝方式
+
+	以 root 身分執行以下指令：
+
+	# make
+	# make install
+
+    二、執行方式
+
+	以 root 身分執行：
+
+	# /home/bbs/bin/gopherd	
+
+	然後可用 gopher 程式來檢驗是否執行成功：
+
+	# gopher your.host.name.domain
+
+	如果正常跑起來，應可看到 BBS 的精華區；如需在開機自動執行，
+	可以將之加入 /etc/rc.local 或 /usr/local/etc/rc.d。

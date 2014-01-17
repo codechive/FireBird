@@ -1,0 +1,1255 @@
+註： 以下文件乃編改自中正資工 Firebird BBS 2.5 版之使用手冊。
+$Id: Firebird-30,v 1.1 2000/01/15 01:49:33 edwardc Exp $
+
+────────────────────────────────────
+                           目       錄
+────────────────────────────────────
+
+			(零) 前言
+
+			(一) 架站前的考量
+
+			  [1] 硬體的準備
+			  [2] 網路流量的考量
+			  [3] 系統安全的考量
+			  [4] 身份確認的重要性
+
+			(二) 安裝 BBS 程式
+
+			  [1] 建立 BBS 的相關帳號
+			  [2] 取得 BBS 程式
+			  [3] 設定及安裝 BBS 程式
+			  [4] 測試 BBS 程式及錯誤的排除
+			  [5] 其他版本 BBS 升級須知
+
+			(三) 設定 BBS 的相關檔案
+
+			  [1] 修改系統設定檔
+			  [2] 修改 BBS 的選單
+			  [3] 開版及建立精華區
+			  [4] BBS 目錄下檔案說明
+			  [5] 活動看板的設定與使用
+
+			(四) 外部工具程式使用
+ 
+			  [1] 簡介自動程序
+			  [2] 上站人數統計
+			  [3] 上站人次統計
+			  [4] 上站次數, 發表文章次數, 使用時間排名
+			  [5] 十大熱門話題統計
+			  [6] 討論區使用率統計
+			  [7] 觀看 .PASSWDS 的程式 -- showuser.c
+			  [8] 自動 login BBS 帳號安裝
+			  [9] BBSnet, Lynx, Archie client, IRC..etc安裝
+
+			(五) 寄信給 BBS 站內使用者及 E-mail Post 安裝
+
+			  [1] 身份確認信處理的流程
+			  [2] 如何修改系統使 BBS 站內 User 能收到 Intermail
+			  [3] E-mail post 安裝及使用
+
+			(六) 轉信程式 INNBBSD 的安裝
+
+			  [1] 安裝轉信程式
+			  [2] 設定轉信所需的設定檔
+			  [3] 申請轉信的方法
+			  [4] 參考文件 [已知 News Server 列表]
+			  [5] 自動砍信程式 expire 介紹
+
+
+─────────────────────────────────────
+                          第 零 章  前言
+─────────────────────────────────────
+
+    本版乃中正資工 Firebird BBS 的一個分支，由 Firebird Power User Group
+    （一群願意繼續維護 Firebird 程式的人組成）結合 FB 2.66m 和 SEEDNet BBS
+    所發展出來的版本，秉持 GNU 軟體開發精神而開放給大家自由拷貝使用、修改。
+
+    本版作者的風格與習性也許跟原版 Firebird BBS 的作者略有不同，因而一些原
+    Firebird BBS 所擁有的小功能並沒有被納入，另外又增加了一些原版 Firebird
+    BBS 所沒有的功能。更重要的一點是，我們嘗試修正了一些存在於原版 Firebird
+    BBS 上的小錯誤。
+
+    本版開放讓大家抓取，其目的在於希望能讓各 Firebird 系列的站台互相交流，
+    集思廣益，一齊參與發展，使 Firebird BBS 在研發方面做得更加的盡善盡美。
+
+    本版在 BSD Licence 下發行，在不修改原有之版權宣告的情形下，各位可任意拷
+    貝及修改。但是我們有個小小的要求，就是若您對它作了一些修改，或修正錯誤
+    ，或添加功能，請回報給發展小組，或在 Firebird 連線版上 post 出您改過的
+    地方，好讓大家也能分享您的成果。與人分享的快樂，勝過獨自擁有，這是本版
+    發行的目的。
+
+
+─────────────────────────────────────
+                          第 一 章  架站前的考量
+─────────────────────────────────────
+
+
+ [1] 硬體的準備
+
+    足夠的記憶體及 SWAP 是影響上站人數上限的關鍵，硬碟的大小則影響到各板文
+    章能保留篇數的多少，在架站前需衡量所需配備。據觀察，一台具有 32MB 記憶
+    體的 Linux 機器在 BBS 人數達 50 人左右時開始會用 SWAP。(Linux 作業系統
+    在記憶體不足的狀況下才會用 SWAP)
+
+    因為 BBS 的檔案多以信件，討論區文章為多，這些都是 1K ~ 2K 的小檔案，所
+    以系統的檔案結構每個 inode 以 1K 或 2K 為佳，您可以下 df -i 指令觀察目
+    前 inode 的使用狀況。inode 的大小通常是在 newfs 時選擇的。
+
+
+ [2] 網路流量的考量
+
+    當您的 BBS 站公開給外界使用以後，通常會遇到以下麻煩：
+
+    如果有大量使用者透過網路連接您的 BBS，會對您們當地的網路造成「有點大，
+    又不會太大」的網路交通量。
+
+    ==> 對策：禮貌性知會網路管理單位，統計網路交通流量，了解 BBS 系統對網路
+	      的影響程度，以調整 BBS 的管理策略。
+
+
+ [3] 系統安全的考量
+
+    由於 BBS 站是一般 cracker 覬覦的對象之一，因此設立 BBS 站之後，容易讓您
+    的工作站成為顯著的入侵目標。
+
+    ==> 對策：請更加注意您的系統安全，尤其當執行外部程式(如 gopher, lynx,
+	      tin....etc)，務必確定程式沒有執行上的漏洞，或者尋找修改過專為
+	      BBS 用的版本，並請勤於修補作業系統的漏洞。
+
+
+ [4] 身份確認的重要性
+
+    除非您的 BBS 站是封閉式的 BBS（也就是使用者必須經過嚴格的申請程序才能擁
+    有帳號），否則請注意匿名使用者的問題。匿名使用者的言責問題一直是網路上
+    爭議的論點之一，因此請您在開站之前考慮您的做法。
+
+    ==> 對策：確認使用者身份以後才給予發表文章的權利，而且規定使用者身份只
+	      能透過系統管理員查詢。如此即可適度保障使用者隱私權、又可在發
+	      生問題時追查責任的歸屬。
+
+
+─────────────────────────────────────
+                          第 二 章  安裝 BBS 程式  
+─────────────────────────────────────
+
+
+ [1] 建立 BBS 的相關帳號
+
+    在安裝 BBS 之前，請您先在系統中加入以下使用者，在 /etc/passwd 內應該如下
+    所示：（新建帳號的步驟會因系統不同而有差異，請您在建立帳號之前參考您的系
+    統管理手冊。採用 UID 9999 的原因是為了避免與一般使用者的 UID 產生衝突）
+
+    一般建立新帳號的步驟是在 /etc/passwd 中加入以下的內容，然後再為 bbs 這個
+    帳號設好密碼：
+
+      bbs:*:9999:99:BBS user:/home/bbs:/bin/sh
+
+    ※目前 Firebird BBS 3.0 已經廢除 bbsrf，所以不必再開兩個 bbs、bbsuser 兩
+      個帳號，只需一個帳號即可。
+
+    此外，在 /etc/group 內加上 bbs 的 group，如下所示：
+
+      bbs:*:99:bbs
+
+    以方便您管理目錄的讀寫權限。
+
+    並在 /etc/shells 中加入 bbs 的 shell(/home/bbs/bin/bbsrf, /bin/sh)。
+
+    以上都設定完成後,在 /home 建立 bbssrc 和 bbs 兩個目錄，並執行：
+
+      # chown bbs:bbs bbssrc bbs
+
+
+ [2] 取得 BBS 程式
+
+    請以 bbs login，再抓取 BBS source，本版的 source 可由以下位址取得：
+
+      ftp://ftp.frirebird.org.tw/pub/Firebird/FirebirdBBS3.0.tar.gz
+      ftp://ftp2.firebird.org.tw/pub/Firebird3.0_BBS/Firebird3.0.tar.gz
+
+    ※請盡量往 ftp2 抓資料，因該機器在 TANet 上，速度較快！
+
+    取回後,解開 FirebirdBBS 3.0 的原始程式，以進行安裝程序。
+    解開 FirebirdBBS3.0.tar.gz 的方法:
+
+      % cd /home
+      % tar zxvf FirebirdBBS3.0.tar.gz
+
+    程式解開之後，會在你所在目錄底下造出 bbssrc 目錄，內含 BBS 的原始程式。
+
+    ※如果您的 tar 不認得 zxvf，請利用匿名 ftp 至 ftp.csie.nctu.edu.tw 取回
+      /pub/GNU/gzip-1.2.4.tar 與 /pub/GNU/tar-1.11.2.tar.gz，並且安裝至您的
+      系統上。
+
+
+ [3] 設定及安裝 BBS 
+
+    1.手動設定
+
+    以 bbs login，編輯 bbssrc/include/functions.h，這個檔定義了一些 bbs 的
+    重要功能，您可以視需要打開或關閉。目前 FB3 預設使用 bbsd，bbsrf 則已經
+    廢除。如果您要使用 bbs 這程式，請修改 bbssrc/src/Maekfile，將有 bbsd 字
+    眼的幾行註解掉，拿掉 bbs 那幾行的註解。
+
+
+    2.自動設定系統環境及填寫主要 BBS 資料
+
+    同樣以 bbs login，到 bbssrc/ 目錄底下執行以下指令：
+
+      % ./configure
+
+    執行的過程應類似以下畫面：
+
+ ..................................
+   Please fill data for your BBS
+ ..................................
+Home directory of BBS --> [/home/bbs]                   ==> bbs 目錄所在
+BBS Source Code directory --> [/home/bbssrc]            ==> bbs主程式目錄
+UID of BBS --> [9999]					==> bbs 的系統 UID
+GID of BBS --> [99]					==> bbs 的系統 GID
+The ID of your site --> [NoName]                        ==> 貴站的英文代號
+The name of your site --> [火鳥系統 3.0]                ==> 貴站名稱 (中文可)
+The domain name of your site --> [some.where.on.earth]  ==> 貴站 domain name
+The IP address of your site --> [127.0.0.1]		==> 貴站 IP address
+The Default board of your site, only change it if upgrading
+from old system with different default board --> [sysop]==> 預設看板
+Maximum number of users --> [20236]			==> 最大使用人數
+Maximum number of boards --> [256]			==> 開板最大數目
+Maximum number of on-line users --> [256]		==> 最大同時上線人數
+Show idle time of BBS users ? --> [Y]			==> 顯示 idle 時間
+Make bbs users invisible (-DINVISIBLE) ? --> [N]        ==> 是否不寫入系統 utmp
+PLEASE CHOOSE THIS CAREFULLY
+Is libcrypt "DES" correct? --> [Y]                      ==> 密碼編碼方式
+........................................
+updating cache ./config.cache
+creating ./config.status
+creating Makefile
+creating config.h
+creating Install.sh
+
+........................................................................
+You may review the Makefile now. Then, type 'make' to build your system.
+........................................................................
+
+    在設定一些數值時，請確切考慮您的硬體設備是否足夠支撐。特別是最大同時上
+    線人數，它是與記憶體的大小非常有關的。
+
+    ※使用 bbsrf 或 in.zbbsd，最大同時上線人數不可超過 256，如果您要將同時
+      上線人數設定超過 256，請拿掉 include/functions.h 中 #define BBSD 這行
+      的註解(預設已是使用 BBSD)，然後重新 configure 一遍。
+
+    另外，如果您使用 FreeBSD，請注意您系統的密碼編碼方式是 MD5 還是 DES，若
+    您從舊 BBS 系統升級到 3.0，在這裡您別無選擇，必須使用 DES，沒安裝的話，
+    請先安裝 DES 後，再執行 configure。
+
+    程式會自動判斷您所用的系統，並且詢問您所架設的 BBS 之基本資料，以造出必
+    要的 Makefile。順利的話，您應該可以在 bbssrc/ 目錄底下找到剛打造出來的
+    Makefile。您可以觀看此檔的設定，若有必要，可手動修改之。
+
+    在 bbssrc/include 下亦可找到 config.h 這個檔，在編譯程式之前您亦可對它
+    作一些手動的修改。同一個目錄下可找到 chat.h 這個檔, 您可以在此更改聊天
+    室的名稱和 port number。
+
+    還有一個要注意的地方，在 bbssrc/src/Makefile 中，有個 EXTRADEF 的定義，
+    您可以在最後面加上 -DWITHOUT_ADMIN_TOOLS，這樣就不會編譯 SYSOP 會用到的
+    系統管理程式，可以節省記憶體，對大型 BBS 本功能尤其有效。
+
+
+    3.編譯 BBS 程式
+     
+    以 bbs 登入，在 bbssrc/ 下執行如下指令：
+
+      % make
+
+    進行編譯動作。編譯過程無錯誤的話，bbssrc/src 目錄底下應該會產生 bbsd(或
+    bbs), chatd 以及 thread 幾個執行檔。這幾個檔案都已產生的話，代表 BBS 程
+    式的編譯已經完成。
+
+    如果因為任何 error 導致 BBS 程式無法產生的話，請先檢查安裝程序是否有錯
+    誤，然後重新。若無法解決，可將編譯過程產生的訊息張貼至各大站 Firebird
+    安裝討論區或 installbbs 板求助。  
+
+    4.安裝 BBS 程式
+
+    以 root login，在 /home/bbssrc 目錄底下執行：
+
+      # make install
+
+    即可大功告成。請繼續測試您剛架設完成的 ＢＢＳ 站。
+
+
+ [4] 測試 BBS 程式及錯誤的排除
+
+    1.測試前準備
+
+    如果您要使用 bbsd，請先以 root 身分執行：
+
+      # /home/bbs/bin/bbsd port
+
+    port 請隨意用您喜歡的 port number，若您要用 port 23，請先關掉系統原有的
+    telnetd，關掉 telnetd 的方式請參考 in.zbbsd 的說明文件。
+
+    如果您要使用 in.zbbsd，請先閱讀 bbssrc/util/in.zbbsd/00README 的說明，
+    安裝好 in.zbbsd。(standalone telnetd 請看 bbssrc/util/telnetd/00README)
+
+    如果您要直接使用 bbsrf，請跳到 2
+
+    ※bbsd、in.zbbsd、bbsrf 僅能擇一使用，切勿混用，造成問題。
+
+    2.測試ＢＢＳ並取得 SYSOP 權利
+
+    Telnet 到您的 BBS 主機，然後以 bbs 當 username 來 login，應該可見到 BBS
+    的進站畫面(用 in.zbbsd 或 bbsd 自動跳過此步)。此時，當 BBS 程式要求您輸
+    入代號時，請輸入 new，以便註冊一個新使用者。由於名稱為 SYSOP 的使用者擁
+    有一切權利，因此您必須先註冊 SYSOP，並且設定密碼。
+
+    ※請注意：SYSOP 必需完全為大寫字母。
+
+    接下來，請再註冊 guest 帳號，此帳號為 BBS 的參觀帳號，不須輸入密碼即可
+    進入 BBS(註冊時隨便打個密碼即可)。如果您不想提供 guest 帳號，可以略過此
+    步驟，並記得把 guest 加入 "不可註冊之ID" 的名單內。若您提供了 guest 帳
+    號，請參考稍後的文件說明替 guest 設定「恰到好處」的權限。通常 guest 帳
+    號是只能參觀不可發言的，因此通常不具有發表文章或聊天的功能。
+
+    3.錯誤的排除
+
+    如果天不從人願，程式一聲不響地結束了，請您以 bbs 登入系統，在 ~bbs 的目
+    錄底下執行「bin/bbs h localhost」，看看能不能執行。如果 bbs 可以執行的
+    話，那應該是 ~bbs/bin/bbsrf 出了問題，請檢查 bbsrf 程式之 owner 與權限
+    ，如果您自行使用 chroot 安裝選項的話，請確定 owner 為 root:bin 且權限為
+    4755(使用 bbsd 請略過此步，因為您系統內沒 bbs 這支程式)。
+
+    如果不是這個情形，請執行 ipcs 指令，查看 shared memory, SHM 的使用情形
+    與 owner 是否正確，正常的 owner 應該是 bbs，如果不是的話，請利用 ipcrm
+    清除之，然後重新執行 bbs。通常此類誤會有 Error! shmat error! key = ooxx
+    的訊息。
+
+    若還是不行，請檢查 ~bbs/etc 中是否有 menu.ini sysconf.ini 這兩個檔案，
+    內容是否完整。如果完整的話，請試著刪除 ~bbs/sysconf.img 檔案，再重新進
+    入 BBS 測試。
+
+    如果還是不行的話，請試著清除整個 BBS 系統，重新開機後再安裝幾次試試。如
+    果真的沒有辦法，請到 tw.bbs.admin.installbbs  討論區求助，或 email  給
+    本系統的發展小組 edwardc@firebird.org.tw。在此特別推薦第一種做法，因為
+    這樣子可以在網路上遇到較多使用 FirebirdBBS 系統的管理者，得到立即回應的
+    機會較大。當然啦，在求助之前請詳述您的系統平台、所用的編譯器，以及出現
+    的錯誤訊息等資訊，這樣子大家才能容易幫您找出可能發生問題的地方，不然可
+    能會沒人回答您的問題喔！又，在發問前，請先往前找找是否有人回答過相同的
+    問題，如果有的話，可能沒人會回答您喔！
+
+
+ [5] 其他版本 BBS 升級須知
+    
+    目前本系統只提供 FB2.5、FB2.62M、FB2.66M 與 Maple 2.x 的轉換程式，其他
+    系統尚未完成。系統資料的轉換，請參考 ~bbssrc/util/upgrade/00README 中的
+    說明。
+
+
+─────────────────────────────────────
+                          第 三 章  設定 BBS 的相關檔案  
+─────────────────────────────────────
+
+    以下介紹主要的設定檔, 以便使用者架出一個符合自己要求的 BBS
+
+
+ [1] 修改系統設定檔
+
+    修改 ~bbs/etc/sysconf.ini
+
+    以下分別說明 sysconf.ini 中選項的意義
+
+    ※新版的已將站台資訊以及 SHMKEYs 均從 sysconf.ini 中移除，改於程式中宣
+      告，以增進程式效率。
+
+# comment
+
+#SHOW_IDLE_TIME         = 1
+KEEP_DELETED_HEADER     = 0          <--設定被砍文章是否保留標題(預設不保留)
+
+EMAILFILE	= "etc/mailcheck"    <--如果把這行前面加上 # 就不寄身份確認信
+#NEWREGFILE	= "etc/newregister"  <--如果把這行前面 # 拿掉就有新手三天限制
+
+PERM_BASIC	= 0x00001            <-- 以下為一些權限的定義, 將在 menu.ini 
+PERM_CHAT	= 0x00002                中使用(請小心修改以免造成問題)
+PERM_PAGE	= 0x00004
+..........................
+
+PERM_SPECIAL6	= 0x8000000
+PERM_SPECIAL7	= 0x10000000
+PERM_SPECIAL8	= 0x20000000
+
+PERM_ESYSFILE	= PERM_SYSOP,PERM_WELCOME,PERM_ACBOARD
+^^^^^^^^^^^^^^ 擁有修改部份/全部系統檔的權限
+PERM_ADMENU	= PERM_ACCOUNTS,PERM_OVOTE,PERM_SYSOP,PERM_OBOARDS, \
+		  PERM_WELCOME,PERM_ACBOARD
+^^^^^^^^^^^^^^ 可看到並使用管理者選單
+PERM_BLEVELS	= PERM_SYSOP,PERM_OBOARDS
+PERM_UCLEAN	= PERM_SYSOP,PERM_ACCOUNTS
+
+AUTOSET_PERM	= PERM_CHAT, PERM_PAGE, PERM_POST, PERM_LOGINOK
+^^^^^^^^^^^^^^ 設定身份確認通過的使用者可得到的權限
+
+#include "etc/menu.ini"
+  
+    注意！修改完 sysconf.ini 後，請至 BBS 主選單按 Shift + ~ 或者砍掉
+    ~bbs/sysconf.img，以便更新系統設定。
+
+
+ [2] 修改 BBS 的選單
+
+    1.加入背景：在每個選單背後都有一個背景，以主選單為例，它的背景就是由
+      screen 這行所指定的 S1_MAIN 所決定：
+
+#---------------------------------------------------------------------
+%S1_MAIN
+                
+                   這裡是背景    
+                   我是可愛的哲哲!!
+                   我好帥喔!!
+
+%
+#---------------------------------------------------------------------
+
+        在 %S1_MAIN 與 % 中的文字都會被當成背景印出.
+   
+    2. menu.ini 內各設定的意義 (以主選單為例)
+                   
+
+%menu TOPMENU
+screen       3, 0, S1_MAIN
+                   ^^^^^^^指定用那個背景
+
+title        0, 0, "歡迎光臨靠邊站(Coba BBS)       "
+             ^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^這是每個選單都
+             欲印出的座標                           有的標題  
+
+!M_EGROUP    3, 0, 0,          "EGroup",    "E) 分類討論區"
+             ^^^^  ^^不限權限皆可用
+             從 (3,0) 開始印
+                                    
+
+!M_MAIL      0, 0, PERM_BASIC, "Mail",      "M) 私人信件服務"
+^^^^^^^            ^^^^^^^^^^要有 BASIC 權限才看的到這個選項
+跳到 M_MAIL 選單
+
+!M_TALK      0, 0, PERM_BASIC, "Talk",      "T) 進入聊天選單"
+             ^^^^(0,0)表接著上行印
+
+#!M_INFO      0, 0, PERM_BASIC, "Info",     "I) 設定個人資料"       
+^^^^^^^^這行前加了個 # , 代表拿掉這行
+
+    以上只簡介了大致上的設定方法，詳細可使用的功能請參考
+    ~bbsroot/bbssrc/bbshome/etc/menu.ini 的檔案，對照修改您
+    現在使用的 menu.ini。
+     
+    注意！修改完 menu.ini 後，請至 BBS 主選單按 Shift + ~ 或者砍掉
+    ~bbs/sysconf.img，以便更新系統設定。
+
+
+ [3] 開板及建立精華區
+
+    1.開板及分類討論區
+
+    剛建好的 BBS 除了預設的討論區外，什麼討論區也沒有，站長可以視使用者需要
+    開啟適當的討論區，同時為了 BBS 使用者找尋討論區方便起見，必需將相關的討
+    論區分類在同一個群組中(Group)，討論區群組的設定請見 ~bbs/etc/menu.ini，
+    以下是參考的設定：
+
+title        0, 0, "分類討論區選單"
+screen       3, 0, S_EGROUP
+@BoardsNew   11,25,0,   "New",          "N) 閱讀新文章  New"
+@EGroups     0, 0, 0,   "0BBS",         "0) BBS 系統 -- [站內]"
+..(略)..     ..(略)..   ..(略)...       .......(略)...............
+@EGroups     0, 0, 0,   "6Sports",      "6) 體育健身 -- [運動] [職棒]"
+@EGroups     0, 0, 0,   "7Talk",        "7) 物理專業 -- [中國物理協會]"
+@BoardsAll   0, 0, 0,   "Boards",       "B) 所有討論區"
+!..          0, 0, 0,   "Exit",         "E) 回到主選單"
+%
+EGROUP0 = "0"
+............
+EGROUP6 = "rs"  <-- r s 為分類碼, 開板時會用到, r 與 s 皆定義為 EGROUP6
+EGROUP7 = "xf"
+EGROUPT = "*"
+
+    請特別注意分類選單的 0) 將會分到 EGROUP0 , 6) 將會分到 EGROUP6...
+
+    開啟新板的方式是到主選單下選 A)系統管理功能表 的 N)開啟新的討論區，第
+    一個建立的板必需為 sysop(安裝時已預先建立好)，請如下輸入：
+
+    討論區名稱: sysop		     <-- 填入討論區的英文板名
+
+    討論區說明: 0[站內] ○ 站務管理區
+		^討論區說明的第一個字為分類碼(定義於 menu.ini), 以此 0 為例
+		 ，將會分至 EGROUP0，也就是 0) BBS 系統 -- [站內]，其餘部份
+		 的討論區說明請按此形式填寫，以免到時板面排的不好看。
+
+    討論區管理員: SYSOP		     <-- 指定討論區的 BM
+    是否限制存取權利 (Y/N) ? [N]: n  <--指定只有某些權限者才能存取此板
+    是否加入匿名板 (Y/N) ? [N]: n    <--是否為匿名板
+
+            1. 本站系統            system.faq
+            2. .......             ..........
+
+           14. 其他                other.faq
+
+    請輸入你的選擇:1		     <-- 選擇精華區要放那 ? 以後可再調整位置
+    已經置入精華區.....
+
+    新討論區成立
+
+    2. 建立精華區
+
+    使用者在討論區按下 x 鍵便會跳至該討論區的精華區，要達成此功能必須要正確
+    設定 ~bbs/0Announce/.Search 檔案內容，可能的內容如下：
+
+      linux:        Linux
+      installbbs:   Linux/bbs
+      sysop:        sysop
+      ....          .......
+
+    其中冒號前代表 board name，後面的代表對映的目錄名例如：在 installbbs 板
+    按下 x 時，FirebirdBBS 就會去找 ~bbs/0Announce/Linux/bbs 下的精華區。
+
+    正常開板時即會自動寫入此檔，平常無需自加，但如果精華區目錄有更動時，請
+    記得修改此檔。
+
+
+ [4] BBS 目錄下檔案說明
+
+    以下說明在 ~bbs 目錄下各重要檔案的功能，請詳加閱讀以便能更掌控貴站的正
+    常運作。
+
+     Part I.☆主要資料檔案☆
+  ───────────────
+  1.BBS_HOME/.PASSWDS
+    存放每位使用者的基本資料，宣告 struct userec。
+    欲觀看此檔內容, 請參考第四章 [7] 的說明。
+
+  2.BBS_HOME/.BOARDS
+    存放討論區的基本資料，宣告 struct boardheader，裡面有一個 element.flag
+    是用來存放討論區的狀況，目前僅僅使用在投票的標示上，應把匿名板、不可以
+    Zap 的板記錄其中較佳。
+
+  3.BBS_HOME/Welcome Welcome.rec
+    進站後的歡迎畫面，和記錄讀取情況。可直接用編輯器修改 Welcome
+    的內容, 注意!!只有當 Welcome有更新過時, 使用者才會看到。
+
+  4.Welcome2
+    與 Welcome 類似, 但每次進站都會看到, 且允許有多重畫面, 以 @login@
+    彼此隔開。
+
+  5.BBS_HOME/home/A-Z
+    存有各個使用者的目錄，並依照使用者 ID 的第一個字來分類排放：
+    例如：SmallPig 使用者的目錄就放在 BBS_HOME/home/S/SmallPig，
+          wildwolf 使用者的目錄就放在 BBS_HOME/home/W/wildwolf。 
+
+  6.BBS_HOME/boards
+    裡面存有各討論區的 directory。
+
+  7.BBS_HOME/vote
+    裡面記錄各討論區的投票控制檔，以及討論區簡介。
+
+  8.BBS_HOME/0Announce
+    裡面記錄精華區資料。
+
+  9.BBS_HOME/etc
+    系統控制檔案。
+
+ 10.BBS_HOME/help
+    各控制鍵說明文件檔案。
+
+   Part II.☆使用者目錄☆
+  ──────────────
+  BBS_HOME/home/A-Z/USERID/*
+
+  1.friends      記錄好友名單，宣告 struct friend 。
+  2.logout       使用者自訂離站畫面。
+  3.maillist     寄信給一群人列表。（目前已刪除）
+  4.notes        個人備忘錄。
+  5.plans        個人說明檔。
+  6.signatures   簽名檔。
+  7.mailcheck    身份確認暫存檔。
+  8.register     身份確認記錄檔。
+  
+  Part III.☆投票目錄☆
+  ──────────────
+  BBS_HOME/vote/BOARDNAME/*
+
+  1.notes	討論區介紹(備忘錄)。
+  2.noterec	記錄討論區讀取情況。
+  3.control	投票控制檔。
+  4.desc.?????	投票描述。
+  5.flag.?????	使用者投票記錄。
+  6.results	投票結果。
+  7.secnotes	秘密備忘錄。
+
+  Part IV.☆系統控制檔案☆
+  ──────────────
+  BBS_HOME/etc/*
+
+  1.anonymous	匿名板名單(目前已移至 ~bbssrc/include/config.h 中控制)
+  2.autopost	每日系統自動 Post 列表。
+
+  使用法如下: 在 autopost 檔中填入以下內容
+
+  /home/bbs/0Announce/bbslist/board1	bbslists	討論區使用率(圖)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^	^^^^^^^^	^^^^^^^^^^^^^^^^
+	欲自動張貼的檔案名		張貼至何板	張貼時用的標題
+
+  ※自動張貼的原理是當有使用者上站時，去檢查 ~bbs/etc/checknotepad 內存的時
+    間，是否距離上次自動張貼已經過 24 小時，是便自動張貼，否則不動作。
+
+
+  3.boardref	 站長開板時所用的參考文件。
+  4.checknotepad 記錄留言板與自動 Post 的時間記錄。
+  5.f_fill	 填寫註冊單失敗的 mail 內容。
+  6.s_fill	 填寫註冊單成功的 mail 內容。
+  7.firstlogin	 新手上路將閱讀的文件。
+  8.fmail	 身份確認失敗的 mail 內容。
+  9.smail	 身份確認成功的 mail 內容。
+ 10.goodbye	 login 三次錯誤的畫面。
+ 11.issue	 進站前的畫面。
+ 12.junkboards	 不記文章數的板。
+
+  ※只要板名列入 junkboards，BBS 使用者在此板發表的文章均不列入個人張貼文章
+    數統計，適合用於灌水板或匿名板等。
+
+ 13.mailcheck	 身份確認寄出信件的內容。
+
+  ※請務必修改此檔內容，以免使用者收到確認信還莫名其妙。
+
+ 14.menu.ini	 選單控制檔。
+
+  ※一些需要使用外部程式的選項在一開始是被 # 符號 mark 起來的。倘若您已安裝
+    好相關外部程式，可將其在 menu.ini 前面的 # 去掉，存檔後按 Shift + ~ 或
+    把 ~/bbs/sysconf.img 砍除，則該選項隨後就會在選單中出現了。
+
+ 15.sysconf.ini  系統控制檔。
+ 16.newregister  註冊說明檔。
+ 17.notepad_tmp  使用者留言暫存處。
+ 18.notepad	 留言板。
+ 19.sysops	 站長列表。
+
+  ※請在此檔中加入站長的 ID 及職稱，例如：
+
+    wildwolf	 系統管理
+    aci		 站務管理
+
+    當使用者有建議時，便可在離站時選擇適當職務的管理者，留信給他。
+
+ 20.user_full	 註冊人數已滿。
+ 21.loginfull	 上站人數已滿。
+ 22.register	 新使用者註冊帳號之輔助畫面。
+ 23.logout	 離站畫面。
+
+  ※離站畫面可使用多個，只要中間以 @logout@ 隔開即可，請bbssrc/bbshome/ete/ \
+    logout 的範例。
+
+ 24.wmail	 退信訊息檔。
+
+  ※當認證信被退回時，系統將會以此封信內容告知使用者。
+
+ 25.whatdate	 紀念日清單。
+
+  ※可以在這裡面設定特別的日子並加以描述，當天 BBS 將會將該日子的描述顯示在
+    畫面下方。注意！字與字之間請勿輸入空白，若發現顯示錯誤或輸入錯誤而要更
+    改，需重新開機方可生效。
+
+ 26.expire.ctl	 expire(post) 程式設定檔。
+
+  ※這個檔案用來設定各板面保留文章的天數，上限及下限等。
+
+
+  Part V.☆討論區目錄☆
+  ──────────────
+  BBS_HOME/boards/BOARDNAME/*
+
+  .DIR            文章資料檔。
+  .DIGEST         文摘資料檔。
+  .THREAD         同標題模式文章資料檔。
+  M.123456789.A   文章。
+
+ [5] 活動看板的設定與使用
+
+    FB 3.0 的活動看板採用新的機制，活動看板的內容來源從 notepad 板中的文摘
+    (也就是被 g 起來的文章) 中選錄。活動看板的寬度也從五行改成七行，您可從
+    include/functions.h 設定是否加大活動看板為七行)。
+
+    當您安裝一套新的系統時，預設在 notepad 板安裝了三個活動看板。您可以自行
+    修改，增添。如果你是 FB 3.0 0614-SNAP 之前的 FB3 使用者，請先清除 movie
+    的 shared-memory (shm key: 30030)，因為更動到相關的資料結構，若不清除則
+    上站會被踢出。
+
+    新增一個活動看板很簡單，只需要發表一篇文章在 notepad 板，然後去把那個文
+    章給收錄文摘(在文章之前按一下 g)，然後重新上站，你可以發現 ~bbs/trace會
+    紀錄活動看板更新的訊息。此後，只要 notepad 有新增或刪除文摘的話，就會自
+    動更新活動看板。
+
+    ※本來程式在收錄活動看板時會自動跳過 4 行的檔頭，然後才抓取 7 (或 5) 行
+      的資料來做為活動看板的內容，在這裡你可以在活動看板的文章標題上，來控
+      制程式從這個檔案的第幾行開始收錄成為活動看板，你只要將標題的第一個字
+      元改成 $，然後第二個字元設成你所想要的行號(0~9)。
+
+      Ex:
+
+      $0   <-這個活動看板從檔案的開始(系統預設的活動看板即採用此方法)。
+
+
+    ※新活動看板機制由 edwardc 從 Magic BBS 990424 移植過來。
+
+
+─────────────────────────────────────
+                          第 四 章  外部工具程式使用
+─────────────────────────────────────
+
+    本章主要是介紹在 ~bbssrc/util 下的程式，這些程式在安裝 BBS 程式時並未安
+    裝，貴站可以視需要參考以下章節的說明安裝這些外部程式。
+
+
+ [1] 簡介自動程序
+
+    在完成基本的 BBS 架設之後，就要開始安裝 BBS 程式以外的一些應用程式，而
+    這些應用程式有些可能 5 分鐘就要跑一次, 有些可能是定時每天的 xx 時 xx 分
+    要執行某這些動作當然不可能每次都由我們自己來做，所以才需要由電腦定時的
+    為我們執行。以下便是簡單的介紹執行自動程序的方法。
+
+    一個描述自動程序的檔內容可能是這樣的：
+
+0,30    8,9,10,11       *       *       *	/home/bbs/bin/account
+^^^^    ^^^^^^^^^       ^       ^       ^	^^^^^^^^^^^^^^^^^^^^^
+minute  hour         monthday month  weekday    command
+
+    我們先把他寫在一個檔裡，叫 cron.bbs，然後執行：
+
+      % crontab cron.bbs
+
+    此時 User 指定的自動程序就會被加入系統中。如果我們想要更改自動程序時，
+    可以再去修改 cron.bbs 然後再執行一次 crontab cron.bbs 即可。你可以執行
+    crontab -l 確認一下自動程序是否已加入。但值得注意的是，誰執行了 crontab
+    cron.bbs，自動程序就會加入誰的自動程序中，以後電腦自動執行程式時，也會
+    以那個人的身份來執行。所以像以下我們所介紹的應用程式都要用 bbs 的身份來
+    執行時，在下 crontab cron.bbs時，就必需要確認此時是以 bbs 的身份來
+    執行，請特別注意這點。
+
+
+ [2] 上站人數統計
+
+    請確定先前執行 configure 時，到 Make bbs users invisible (-DINVISIBLE)
+    選項時您選 N，如果您當時選 Y，請修改 bbssrc/Makefile 將 -DINVISIBLE 拿
+    掉了，之後 make update 更新 bbs 程式。接下來請至 ~bbssrc/util/local_utl
+    下，修改 averun.c 的 90 行附近，將其改為貴站的中文站名，再下如下指令：
+
+      % make averun
+
+    把 averun 拷到 ~bbs/bin 下並在 ~bbs/ 下建立 cron.bbs，加入以下內容：
+
+    0,5,10,15,20,25,30,35,45,50,55 * * * * /usr/bin/uptime >> \
+      /home/bbs/reclog/uptime.log
+    57 * * * * /home/bbs/bin/averun /home/bbs/reclog/uptime.log;/bin/rm \
+      /home/bbs/reclog/uptime.log
+    56 0 * * * /bin/mv /home/bbs/0Announce/bbslist/today \
+      /home/bbs/0Announce/bbslist/yesterday; /bin/rm /home/bbs/reclog/ave.src
+
+    ※為方便閱讀，太長的命令用 "\" 斷開，切成兩行，實作時請務必寫成一行，並
+      將 "\" 拿掉。
+
+    再來用 bbs 的身份 login，建立 /home/bbs/reclog 的目錄，這個目錄是用來存
+    放累計用的資料，之後再進入 BBS 的精華區，在精華區主目錄下，開一個目錄叫
+    bbslist (用 g 功能)，在 bbslist 的目錄之下建兩個檔案，一個叫 today(今日
+    上站人數統計)，另一個叫 yesterday(昨日上站人數統計)，然後離開 BBS，切到
+    ~bbs/ 目錄下，用 bbs 身份下：
+
+      % crontab cron.bbs
+
+    以後電腦就會自動更新這兩個檔的內容。
+
+
+ [3] 上站人次統計
+
+    請至 ~bbssrc/util/local_utl 下，修改 account.c 108 行附近有關站名的中文
+    部份，然後執行：
+
+       % make account
+
+    再把 account copy 到 ~bbs/bin 下，接著進入 BBS，在 bbslist 目錄下開兩個
+    檔，一個叫 countusr(今日上站人次統計)，一個叫 countusr.last 昨日上站人
+    次統計)，內容先空白。然後修改 ~bbs/cron.bbs，加入如下內容：
+
+    0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/bbs/bin/account
+    0 0 * * * /bin/cp /home/bbs/0Announce/bbslist/countusr \
+      /home/bbs/0Announce/bbslist/countusr.last
+
+    ※上述指令中，原本採用 mv，會造成每天晚上 12:00 以後進不去的問題，所以
+      改用 cp 指令。
+
+    之後在 ~bbs/ 目錄下，以 bbs 身份下 crontab cron.bbs 就做完上站人數的自
+    動統計功能了。
+
+
+ [4] 上站次數，發表文章次數，使用時間排名
+
+    請至 ~bbssrc/util/local_utl 下執行：
+
+      % make bbstop
+
+    再把 bbstop copy 到 ~bbs/bin 下，進入 BBS，至精華區 bbslist 目錄下開四
+    個檔，分別是 toplogin(上站次數排行)，toppost(post次數排行)，topstay(使
+    用時間排行)，topall(總積分排行)，然後修改 ~bbs/cron.bbs 的內容，加入如
+    下敘述：
+
+    0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 1 > \
+      /home/bbs/0Announce/bbslist/toplogin
+    0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 2 > \
+      /home/bbs/0Announce/bbslist/toppost
+    0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 3 > \
+      /home/bbs/0Announce/bbslist/topstay
+    0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 4 > \
+      /home/bbs/0Announce/bbslist/topall
+
+    在 ~bbs/ 目錄下，以 bbs 身份下 crontab cron.bbs 以後電腦就會自動更新這
+    四個檔的內容。
+
+
+ [5] 十大熱門話題統計
+
+    請至 ~bbssrc/util/local_utl 執行：
+
+      % make poststat
+
+    再把 poststat 拷至 ~bbs/bin，建立 ~bbs/etc/posts 目錄(owner 為bbs)進入
+    BBS，在 bbslist 目錄下開四個新檔 day, week, month, year；分別是本日十大
+    熱門話題，本周十大熱門話題.....。然後用 bbs 的身份把 ~bbs/etc/posts 下
+    的對映檔 link至這 (即在 ~bbs/etc/posts 下指令：
+
+    rm ~bbs/0Announce/bbslist/day;ln -s day ~bbs/0Announce/bbslist/day
+
+    其餘依此類推。再修改 ~bbs/cron.bbs 加入如下敘述：
+
+    10 * * * * /home/bbs/bin/poststat /home/bbs
+
+    在 ~bbs/ 目錄以 bbs 身份下 crontab cron.bbs，之後每小時會做一次統計。注
+    意！只要某板有設 Read or Post 限制，那個板便不列入統計，所以一般板請勿
+    設 Read or Post 限制。
+
+
+ [6] 討論區使用率統計
+
+    請至 ~bbssrc/util/local_utl 目錄下：
+
+      % make usage
+
+    把 usage 拷至 ~bbs/bin 下，再進入 BBS，在精華區 bbslist 目錄下建兩個檔
+    board1(圖表式的討論區使用率統計)，board2(文字式的討論區使用率統計)，再
+    修改 ~bbs/cron.bbs 加入：
+
+    15 * * * * /home/bbs/bin/usage 0 ; /home/bbs/bin/usage 1
+
+    在 ~bbs/ 目錄以 bbs 身份下 crontab cron.bbs 即可。
+
+
+ [7] 使用者生肖、星座統計
+
+    到 ~bbssrc/util/local_utl 執行：
+
+      % make horoscope
+
+    把 horoscope 拷至 ~bbs/bin 下，再進入 BBS，在精華區 bbslist 目錄下建兩
+    個檔：counthoro(星座統計)，countani(生肖統計)，再修改 ~bbs/cron.bbs 加
+    入：
+
+    0 * * * * /home/bbs/bin/horoscope
+
+    在 ~bbs/ 目錄以 bbs 身份下 crontab cron.bbs 即可。
+
+
+ [8] 觀看 .PASSWDS 的程式 -- showuser.c
+
+    showuser.c 這支程式。可以把 .PASSWDS 的資料列出來。先至 ~bbssrc 下如下
+    指令：
+
+      % make showuser
+
+    再將 showuser 拷至 ~bbs/bin 下，只要下如下指令：
+
+      % showuser ~bbs/.PASSWDS i8 n12 r12 m30 u8
+
+    即可列出使用者的各項資料，詳細參數執行 showuser 便有說明。
+
+
+ [9] BBSnet, Lynx, Gopher client ,MJ..etc安裝
+
+    1.BBSnet 安裝
+      BBSnet 功能定義於特別服務選單的 @ExecBBSNet，這個功能選項內定會去執行
+      ~bbs/bin/bbsnet.sh，所以如果你想讓你的 BBS 有能提供其他網路連線的功能
+      的話，首先你必需有一個能提供選單式連出的程式，目前常用的 BBSnet 程式
+      可以從下面的位址取得：
+
+      ftp://ftp.firebird.org.tw/pub/Firebird/add-ons/bbs-v1.8.tar.gz
+
+      抓回來後，隨便找個目錄解開，參照內附說明 make bbs 再設好設定，把 bbs
+      拷成 /bin/bbsnet.sh 即可完成 BBSNet 安裝。不過請注意，連線 BBS 儘量不
+      要有連至其他 BBS 的功能，以便追查信件來源，所以安裝此功能前請務必仔細
+      考慮，並只開放此功能給擁有特殊權限的使用者。
+
+    2.Lynx 的安裝
+      Lynx 功能定義於特別服務選單的 @WWW，這個功能選項會去執行 ~bbs/bin/ \
+      www.sh，只要在 www.sh 中執行 lynx 即可。(lynx 是一種只有文字介面的瀏
+      覽器。請特別注意, lynx 必需先經修改，不能讓使用者有更改編輯器設定的選
+      項，也不能讓使用者可以進入 shell，以免系統被侵入，如果你對這方面不熟，
+      請先至轉信 installbbs 板詢問清楚再安裝此功能。)
+
+    3.Archie Client 的安裝
+      Gopher 功能定義於網路功能選單的 @ExecArchie，這個功能選項內定會去執行
+      ~bbs/bin/archie.sh。archie client程式可以由以下位址取得：
+      ftp://ftp.firebird.org.tw/pub/Firebird/add-ons/archie-1.4.1.tar.gz 
+     
+    4.IRC Client 的安裝
+      IRC 功能定義於網路功能選單的 @ExecIRC，這個功能選項內定會去執行 ~bbs/\
+      bin/irc.sh，只要在 irc.sh 中執行 irc 即可。
+      irc 程式可以到 ftp://ftp.firebird.org.tw/pub/firebird/add-ons/ \
+      ircii-2.8.tar.gz，請自行閱讀內附說明安裝至貴站系統中。
+
+    5.POP3D 的安裝
+      POP3D 可以讓 BBS 使用者通過 POP3 Client，如 Netscape Mail, Micorsoft
+      Outlook, Eudora 等等，離線閱讀他們在 BBS 信箱內的信件。要使用 pop3d
+      請到 ~bbssrc/util/local_utl 執行 make bbspop3d，接著把編出來的 bbspop3d
+      放在適當地方 (如 /home/bbs/bin) 再以 root 執行之。您必需以 root 來執
+      行，一旦執行後便會常駐了，可考慮把它設定成開機自動執行。
+
+    6.bbs-fingerd 的安裝
+     fingerd 可以讓使用者透過 finger client (port 79) 來查看 BBS 站的線上使
+     用者，或 query 個人資訊，就好像在站上 query 使用者一樣。要使用 fingerd
+     請到 ~bbssrc/util/fingerd 裡執行 make，接著把 fingerd 檔放置到適當地方
+     ，例如 ~bbs/bin，或 /usr/local/bin。請注意，因為這個程式占用了 port 79
+     的 finger port，請您務必要用 root執行，並請勿更改檔案權限，否則程式會
+     無法執行。且執行前請先確定系統中有無其他 fingerd 或其他程式正使用 port
+     79，若有 bbs-fingerd 無法 bind port 79，將不會作用。
+
+
+─────────────────────────────────────
+            第 五 章  寄信給 BBS 站內使用者及 E-mail Post 安裝  
+─────────────────────────────────────
+
+    這章所要安裝的是最難處理的 sendmail 的設定修改, 因為各 OS 以及 sendmail
+    的版本都會有所差異，所以本章只能大略的說明一般性的安裝流程，如果安裝有
+    問題，請將完整退信內容，及 ~bbs/bbslog 檔案內的訊息張貼至轉信installbbs
+    板求助。
+
+ [1] 身份確認信處理的流程
+
+    本版 FB 3.0 在使用者註冊後，便會以 SYSOP.bbs 的身份發身份確認信給使用者
+    的 E-mail 位址處，當使用者收到信件後，直接 reply 信件，將確認信回寄給原
+    發信者 SYSOP.bbs，便可通過身份確認(使用暗碼認證無須此步動作)。如果我們
+    詳細的解說其流程則是如下所示：
+
+    send:
+    =====
+    SYSOP.bbs mail to user -> sendmail (bbs) -> sendmail (user) -> user
+
+    receive:
+    ========
+    user mail to SYSOP.bbs => sendmail (user) => sendmail (bbs) => 
+    mail to SYSOP -> bbsmail -> mail2bbs -> SYSOP.bbs 
+
+    一般未修改過的 sendmail.cf 並不接受收信者為 xxx.bbs 的型式，所以主要要
+    更改的就是這個部份。以下 [2] 便說明如何修改，請特別注意！對 sendmail.cf
+    而言，空白與 TAB 是不同的東西(雖然看起來好像一樣)，請仔細參閱說明更改。
+
+
+ [2] 如何修改系統使 BBS 站內 User 能收到 Intermail                 
+
+    1.請至 ~bbssrc/util/mail2bbs，編輯 Makefile，查看 Domain Name 與一些檔
+      案的路徑是否有誤，修正後，以 root 身份在該目錄下打 make，如沒遇到錯誤
+      ，系統會自動把編譯出的檔案拷背到 /home/bbs/bin 中，您可到 ~bbs/bin 中
+      查看是否有 bbsmail mailgate.pl mail2bbs 等程式。
+
+    2.修改 /etc/sendmail.cf
+      sendmail.cf 中的 Rule 可分為三段，第一個段是檢查進來的信件 header 某
+      部分是否符合該 Rule，如果是，就交給第二段做轉換，不是就 pass 給下一個
+      Rule，直到信被收進來或退回；而第三段是註解或錯誤訊息，方便使用者了解
+      這個 Rule 的動作。注意！Rule 的每一段以 Tab 分開，不可偷懶用空白。
+
+      隨便一個 rule 來做介紹：
+
+      R$*                     $: $>Parse0 $1          initial parsing
+	 ^^^^^^^^^^^^^^^^^^^^^		    ^^^^^^^^^^
+      "R$*" 是第一段，"$: $>Parse0 $1" 是第二段，initial parsing 是註解。這
+      三段中間用 ^^^^^^ 標示的部分需以 Tab 分開。
+
+      以下開始介紹要修改的地方。
+
+      找尋下面的段落：
+
+R$*			$: $>Parse0 $1		initial parsing
+R<@>			$#local $: <@>		special case error msgs
+
+
+    在這兩行中間加入下面幾行：
+
+# 擋撥接線路來的廣告信啦！
+R$*dialup$* $| $*	$#error $@ 5.7.1 $: "no access from dialup system"
+R$+ts$+hinet$+ $| $*	$#error $@ 5.7.1 $: "Bye bye, HiNet dialup user..."
+# BBS mailer (這行是註解)
+R$+.bbs < @ $=w . >	$#bbsmail $: $1		bbs mail gateway
+
+
+    找尋下面段落：
+
+# handle locally delivered names
+R$=L			$#local $: @ $1		special local names
+R$+			$#local $: $1		regular local names
+
+
+    在這兩行中間加入下面兩行：
+
+#BBS mailer (這行是註解)
+R$+.bbs			$#bbsmail $: $1		bbs mail gateway
+
+
+    找尋下面段落：
+
+##################################################
+###   Local and Program Mailer specification   ###
+##################################################
+
+
+    其後加入：
+
+Mbbsmail,	P=/home/bbs/bin/bbsmail, F=lsSDFMuhP, S=10, R=20,
+		A=bbsmail -d $u
+
+
+    ※再次強調，rule 的三個欄位須以 Tab 隔開，不是 Space！
+
+    3.測試改好的 sendmal.cf 
+
+      執行 sendmail -C/etc/sendmail.cf -bt  
+        > 0 SYSOP.bbs
+        rewrite: ruleset   0   input: SYSOP . bbs
+        rewrite: ruleset 199   input: SYSOP . bbs
+        rewrite: ruleset 199 returns: SYSOP . bbs
+        rewrite: ruleset  98   input: SYSOP . bbs
+        rewrite: ruleset  98 returns: SYSOP . bbs
+        rewrite: ruleset 198   input: SYSOP . bbs
+        rewrite: ruleset 198 returns: $# bbsmail $: SYSOP
+        rewrite: ruleset   0 returns: $# bbsmail $: SYSOP
+
+      若最後不會 refer 到 bbsmail，檢查是否如上 2. 所示加入所屬 rule，並確
+      實以 Tab 區隔欄位。 
+
+    4.執行 kill -1 `cat /var/run/sendmail.pid` 重跑 sendmail。
+
+      修改完 /etc/sendmail.cf 後，kill -1 `cat /var/run/sendmail.pid`，這樣
+      系統便會重新啟動 sendmail 並讀入剛剛設定的 /etc/sendmail.cf。請執行：
+
+        # ps -ax|grep sendmail
+
+      如果有看到 sendmail: accepting connections on port 25 等字眼就代表你
+      的 mail2bbs 已經裝好了！趕快寄一封信到你的 bbs 信箱試試看吧！BBS 的信
+      件格式是 YourID.bbs@YourBBS.Domain.Name。
+
+
+ [3] E-mail post 安裝及使用    
+
+    注意！此方法因為有些安全上的問題，故不建議使用，我們正研究替代方案中！
+
+    E-mail post 的安裝只是利用原先 sendmail 就提供的 forward 信件功能，將寄
+    給 bbs 這個帳號的信件，經程式處理後轉貼至 BBS 站上。因 mailpost 與下一
+    章的 news 轉信程式 combine 在一起，需一起安裝，因此以下同時介紹兩者的安
+    裝方式：
+
+    1.以 bbs login 先至 ~bbssrc/util/innbbsd/ 下，編輯 Makefile，查看前面幾
+      行設定是否有誤，然後執行 make; make install，這樣即可裝好。
+
+    2.在 ~bbs/ 下編輯 .forward 檔內容, 加入如下內容:
+
+       "| /home/bbs/innd/mailpost /home/bbs"
+
+      請注意!!雙引號的部份也要寫入檔案中
+
+    3.確定已在 /etc/shells 中加上 bbs 的 shell。
+
+    4.寫一篇測試用的 mail 叫 email_test, 檔頭一開始是
+
+       #name: user-id
+       #password: user-password
+       #board: board-name
+       #title: article-tile
+       #localpost:           <---如果有加這行此篇文章便不轉信出去
+       (空一行)
+       ...............
+       ...............
+
+      然後 mail bbs@your-domain-name < email_test 看看 E-mail post 是否正常
+
+    5.檢查 ~bbs/bbslog , 看看是否內容像
+
+      post to /home/bbs/boards/board-name/M.820143515.A
+      ...........................................
+
+      就完成 E-mail Post 安裝了！
+
+    註：在 ~bbssrc/doc/examples 目錄下有修改好的 sendmail.cf 檔供參考喔！
+
+
+─────────────────────────────────────
+                      第 六 章  轉信程式 INNBBSD 的安裝
+─────────────────────────────────────
+
+    轉信程式的設定會隨貴站所需的轉信方式而有所不同，本章只簡介安裝 INNBBSD
+    這套轉信程式的方法，並只介紹 client 讀取抓信方式的轉信設定，其餘的設定
+    請參考 ~bbssrc/util/innbbsd/README 的說明。
+
+    FB 3 的 INNBBSD 內含 bbsnnrp 檔信系統，預設是關閉的，如果您有需要，請參
+    照 ~bbssrc/util/innbbsd/README.antispam 來自己設定您的設定檔。
+
+
+ [1] 安裝轉信程式
+
+    安裝方式請參閱上一章最後一節 mailpost 的說明，在此不贅述。
+
+
+ [2] 設定轉信所需的設定檔
+
+    1.在 ~bbs/innd 修改如下的幾個檔案 (最好使用 vi 來做)
+
+      [ bbsname.bbs ]
+
+      JCPP  <--- 與你在執行 configure 時寫的 BBSID 一樣。
+
+      [ nodelist.bbs  ]
+
+      csie	news.csie.nctu.edu.tw		POST(119)	Csie
+      JCPP	sexboy.Dorm12.nctu.edu.tw	IHAVE(7777)	Coba BBS
+      ^^^^	^^^^^^^^^^^^^^^^^^^^^^^^^	^^^^^^^^^^^	^^^^^^^^
+      BBSID     你的 BBS hostname		轉信方式	註解
+    
+      這個檔案描述了 News Server 的 Domain 與 News Server 的代號的對映表，
+      例如: news.csie.nctu.edu.tw -> csie 
+      而 POST(119) 代表使用 nnrp access 的方式(跟 tin 很像)，IHAVE(7777) 則
+      代表貴站使用 port 7777 的 innbbsd 來收信。其中 BBSID 千萬不要跟別站相
+      同，以免會有信件回流的誤判。
+
+      [ newsfeeds.bbs ]
+
+      tw.bbs.test		test		csie
+
+      請按照 ~bbssrc/doc/TW_NewsGroup_List 的參考文件，將想轉的 News groups
+      寫在第一欄，而第二欄寫的是要轉進貴站的那個板名(請先建立好)，而第三欄
+      則是寫明這個 News group 是從那個 News Server 轉進，以後送信時便會送到
+      那裡。
+
+      [ csie.active ]
+
+      tw.bbs.test		0000000000	0000000001	y
+
+      csie.active 則是定義要從那個 News Server 抓那些 groups，對於每個 News
+      Server 都要建立一個對映的 active File (例如：以上只有從csie 抓，所以
+      只需有一個 active file , 檔名則自定)。後面兩個 0000000000 則是 active
+      number，以後會隨著每次抓信動作而更新。也就是記錄抓信抓到那了！
+
+    2.寫好這些檔案後，以 bbs 身份在 ~bbs/innd 下執行 innbbsd，或以 root 將
+      innbbsd 寫入 /etc/inetd.conf 以 inetd 啟動設定方式如下：
+
+      innbbsd stream  tcp    wait   bbs   /home/bbs/innd/innbbsd innbbsd -i
+
+      再執行 ctlinnbbsd reload (重讀設定檔)。
+
+      ※寫入 /etc/inetd.conf 的方式不建議用。
+
+    3.現在測試抓信，以 bbs 身份在 ~bbs/innd 下打：
+     
+      ./bbsnnrp	news.csie.nctu.edu.tw	./csie.active
+		^^^^^^^^^^^^^^^^^^^^^	^^^^^^^^^^^^^
+		到那個 News Server 抓	對映的 active File
+     
+      再進入 BBS 觀看信件是否轉入。
+
+    4.現在測試送信，以 bbs 身份在 ~bbs/innd 下打：
+     
+      bbslink -v /home/bbs
+     
+      觀看送信過程是否有 error，再 setenv NNTPSERVER=news.cise.nctu.edu.tw
+      用 tin -r 連至 News Server 的 tw.bbs.test 討論區，檢查信件是否送出！
+ 
+    5.轉信程式非常敏感，請勿用 bbs 以外的身份來跑 innbbsd, bbsnnrp, bbslink
+      ...etc 之類的程式，會造成 BBS 系統無法正常運作。
+
+    6.本板之程式，將所有欲送出的信件先統一放入一記錄檔，當執行 bbslink 時，
+      便可免除逐步搜尋討論區尋找新信件的麻煩，如貴站之前已有裝過 innbbsd，
+      請務必改用 FB 3 packages 中附的 innbbsd 程式。  
+
+    7.轉信送信均正常後，可將 bbsnnrp & bbslink 的動作寫入 crontab 中。
+
+ [3] 申請轉信的方法
+
+    不論是用主動抓信或由上游 News Server 餵信，皆以離貴站最近的 News Server
+    為佳。以上的轉信範例皆以交大資工的 News Server 為例，不過因為這台 load
+    很重，建議另尋別台。當貴站所要轉進的 News groups 很多時，建議改採 server
+    feed 的方式，不要用 bbsnnrp 抓信。申請轉信可以參考下一節說明，直接 mail
+    給管理者申請。
+ 
+ [4] 參考文件 [已知 News Server 列表]
+
+    News server 參考表
+    ─────────
+
+   下表是 TANet 上常見的 News 伺服器，如果要加入連線轉信的話，可以就近與之
+   聯絡(此表資訊已舊，僅供參考)。
+
+    [台北]
+      台大計中 News Server	ckhuang@netnews.ntu.edu.tw
+      政大計中 News Server	andrew@news.nccu.edu.tw
+      大同資工 News Server	秘密情人資訊站 Gary
+
+    [桃園]
+      中央資管 News Server(news.mgt.ncu.edu.tw)  managers@mgt.ncu.edu.tw
+      中央資工 News Server(news.csie.ncu.edu.tw) 
+      中央大學 News Server(news.ncu.edu.tw)
+      中正理工 News Server			 yuan@cs.ccit.edu.tw
+
+    [新竹]
+      交大資工 News Server	mfchen@csie.nctu.edu.tw
+      交大資科 News Server	gis83504@cis.nctu.edu.tw
+      交大電子 News Server	pcyu@alab.ee.nctu.edu.tw
+      交大電子 News Server	ljh@phillies.EE.NCTU.edu.tw
+      清大電機 News Server	gamin@news.ee.nthu.edu.tw
+      清大數學 News Server	@mathnet.math.nthu.edu.tw
+      清大資科 News Server	news@news.cs.nthu.edu.tw
+
+    [台中]
+      中興大學 News Server	cslee@netcentral.nchu.edu.tw
+
+    [台南]
+      成大資訊所 News Server	成大資訊所_BBS juru
+
+
+ [5] 自動砍信程式介紹
+
+    FB 3.0 以後採用用 C 改寫後的 expire 來取代原先效能低落的 perl 程式，該
+    程式位於 ~bbs/bin 中，設定檔在 ~bbs/etc/expire.ctl，你可以在 BBS 的管理
+    選單中利用「編輯系統檔案」功能直接編修各板上限，各種設定方法與使用方法
+    與舊版的程式完全相同。請將 expire 也加入 crontab 中，建議設定在每天晚上
+    11:50 分附近執行砍信動作。
+
+
+────────────────────────────────────
+	         		網路資源
+────────────────────────────────────
+
+    FTP 站 :
+	ftp://ftp.firebird.org.tw/pub/Firebird/
+	ftp://ftp2.firebird.org.tw/pub/Firebird3.0_BBS/
+		 
+    WWW 站：
+	http://www.firebird.org.tw/
+	
+    Net-News:
+	news://news.firebird.org.tw/tw.bbs.admin.firebird
+	news://news.firebird.org.tw/tw.bbs.admin.firebird.fpug
+
+    歡迎至 bbs.seed.net.tw  FPUG 板討論、提供意見給發展小組。^_^	
+    如果你也想加入我們,一起開發 Firebird3.0, 請 mail 給：
+
+    edwardc@firebird.org.tw

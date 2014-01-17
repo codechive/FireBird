@@ -1,0 +1,71 @@
+升級轉換舊版資料說明檔
+$Id: 00README,v 1.2 2000/11/14 15:33:33 edwardc Exp $
+
+在轉換你舊有版本的使用者資料至 Firebird BBS 3.0 版時，請先做以下的前置動作
+
+0.	目前只支援 Firebird BBS 2.5、2.66M、2.62M 升級，目前尚支援 Maple 2.36 
+	版本的 .PASSWDS 檔轉換至本板格式，其他版本尚未完成。
+
+1.	備份原有的資料，最好是把整個 bbshome 備份起來，有困難時至少也要備份
+	~bbs/.PASSWDS、~bbs/.BOARDS、~bbs/home、~bbs/mail、~bbs/0Announce。
+	可以的話，多備份幾份，放到不同機器，以防萬一。
+
+2.	不是故意要嚇人，但是我們對任何資料的流失或損壞不負任何責任。
+
+3.      如果你的版本不在以上支援的列表中，請 mail: edwardc@firebird.dhs.org
+	或是試著用本說明最後一段 Upgrade from unknown version 所用的方式。
+
+4.	從 Linux 要移植到 FreeBSD 的使用者請注意：請注意你的 FreeBSD 所使用
+	的編碼方式是否是 DES，請查看 configure.inf 檔的 LIBCRYPT 為什麼，如
+	果是 MD5 請調整系統為使用 DES 編碼，否則將無法登入 BBS。
+
+
+  使用方法
+------------
+
+	請先板舊版的 .PASSWDS 放進本目錄來
+
+	** 注意！如果你是從非 i386 平台上要移植到 i386 平台上面, 如從 Sparc
+	** 移植到 Pentium 的機器, 你必須要修改 repass.c 打開 NON_I386_TRANS
+	** 的 define，才能正確的轉換 unsigned int, time_t 等資料。
+
+	然後依據你的版本, 執行 make 2.5 或 2.66m 或 2.62m，Maple 2.x 則是 Maple
+	2，程式編譯好後，會自動執行轉換，轉換成功後，新的檔案會是 .PASSWDS.new。
+
+	程式會依需求, 一一轉換好友名單 (friend) 或看板列表 (.BOARDS)
+
+	更動 .PASSWDS 前請先記得要求所有使用者離開，清掉 shm 或 reboot。
+	你可以在 ~bbs 底下建一個 NOLOGIN 檔案, 當使用者要連上你的站台的時候
+	將會顯示該檔案的內容, 然後斷線.
+	
+	清除 shm （share memory）指令 : ipcrm shm <shmid> 
+	顯示 shm 狀態指令 : ipcs
+
+	將 ~bbs/.PASSWDS 換成 .PASSWD.new，清除 share memory 後就可 login 測試。
+
+	假如你有備份下 BBS 文章(~bbs/boards/)，也可解開，否則你必須在 boards
+	目錄下建立檔名為版名的空目錄，否則以後將無法發信。 
+
+	資料轉換部分到此為止，接下來只需安裝其他 Firebird 3.0 程式即可。
+
+   
+ Upgrade from unknown version
+-------------------------------
+
+	如果你不確定你用是什麼版本，你依然可以轉換密碼檔，只不過可能不是很完
+	整的轉換。且轉換出來的檔案，也不一定可以正常的使用。
+
+	首先請把你原本版本裡面的 struct.h 放來 util/upgrade/include 裡面，
+	並命名為 struct.unknown.h。
+
+	然後把該版本用的 .PASSWDS 放來本目錄底下。
+
+	再來執行 make unknown，程式將會自動執行轉換，轉換後請自行測試新的
+	.PASSWDS 檔。
+
+--
+create : edwardc@FireBird.dhs.org
+modify : skyo@mgt.ncu.edu.tw
+
+big-endian -> little-endian translation code contribute by 
+ANFORNEE.bbs@redbbs.cc.ntut.edu.tw

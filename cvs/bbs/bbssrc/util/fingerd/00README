@@ -1,0 +1,66 @@
+$Id: 00README,v 1.1 2000/01/15 01:45:32 edwardc Exp $
+
+bbs-fingerd for Firebird BBS  *beta 4*
+
+0. 前前言 -- beta 說明
+
+	因為這個 fingerd 是從 FreeBSD 裡的 source code 改過來的, 所以有些地方
+
+	使用的函數或參數只有 FreeBSD 才有, 所以別的平台用起來不是很完整
+
+	Solaris 方面我已經在盡力修改了, 有使用其他平台 (如 Linux), 如果有餘力
+
+	的話可以幫幫忙 :P 
+
+1. 前言
+
+	這鍋 bbs-fingerd 是從 fromzero 3.0 裡面附的給硬 port 過來的 :P
+
+	並已經內含在 Firebird BBS 3.0 的 package 裡
+
+2. 安裝 & 使用 (懶人快速安裝法 :> )
+
+	tar zxvf bfingerd.tar.gz 在 ~bbsadm/bbs_src/ 裡面解開
+
+	% cd ~bbsadm/bbs_src/local_utl/fingerd
+
+	之後修改 Makefile 裡的 BBSHOME 與 BOARDNAME 兩個定義
+
+	如果您使用的不是大馬板 M 板的話, 請修改 fingerd.c 把其中
+
+	UTMP_SHMKEY 與 UCACHE_SHMKEY 的值修改與 ~bbs/etc/sysconf.ini 裡定義的
+
+	相符合
+
+	並視環境修改 Makefile 的 CFLAGS , solaris 系統請使用有 -DSYSV 的那行
+
+	CFLAGS
+
+	存檔之後執行編譯
+
+	% make
+
+	出來 fingerd 以後就把它放進 ~bbs/bin 裡, 並 *suid root*
+
+	% make install 
+
+	修改 /etc/inetd.conf 把 finger 那行給 # 起來, 並 kill -1 <inetd.pid>
+
+	然後執行 ~bbs/bin/fingerd 79
+
+
+
+	試著 finger @localhost 或是 sysop.bbs@localhost
+		    ^^^^^^^^^^      ^^^^^^^^^^^^^^^^^^^
+		    站上使用者列表  如 query sysop 一樣
+
+	都可以的話可以把 ~bbsadm/bbs_src/local_utl/fingerd/ 給砍了 ;P
+
+	enjoy :>
+
+
+
+
+--
+by edwardc@Firebird.dhs.org
+Firebird BBS Project

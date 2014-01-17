@@ -1,0 +1,140 @@
+
+			如何更新程式碼成為最新的版本
+
+	$Id: Upgrading,v 1.3 2000/07/20 14:56:58 biboman Exp $
+
+
+前言
+
+	Firebird BBS 3.0 系列採用 CVS 做為版本控制，由一群愛好者組成的 core
+	team 每天對整個程式做修改，新增功能，或是 bug fix。所以我們提供了許
+	多種方法，讓您可以隨時都能得到最新的版本。
+
+	不過要說明的一點，新的版本也許解決了某些問題，但也可能帶來某些新的問
+	題，我們一定會盡力把影響減至最低，但還是請您一定要了解這一點。
+
+
+1. 使用 SNAP package 升級
+
+	core team 每隔一段時間會 release 所謂 SNAP 版的 tar ball，這個壓縮檔
+	包含了完整的 source tree，是一個完整的 BBS 版本。
+
+	SNAP 版可以在 ftp://ftp.firebird.org.tw/pub/Firebird 底下抓到，檔名
+        通常是 3.0-YYYYMMDD-SNAP.tar.gz，檔名表示是 YYYY 年 MM 月 DD 日放出
+	的 SNAP 版本，越接近您抓取的日期檔案越新。
+
+	優點：穩定。應該不會有什麼大問題。
+	缺點：無法最新的 Source 同步，且每次都要抓 900 KB 左右的壓縮檔。
+		                          (可參照下一小節使用 Lite Package)
+
+
+1.1 使用 Lite Package 升級
+
+	Lite Package 是一個精簡版本的 SNAP Package，裡面包含了完整的程式碼，
+	library，bbshome等，檔案大小約只有同期 SNAP tar ball 的三分之一，但
+        已經足夠架設一個具備基本功能的 BBS 站。
+
+	Lite Package 版可以在跟 SNAP 同一個 ftp 目錄下找到，檔案名稱通常為：
+	3.0-yyyymmdd-SNAP_lite.tar.gz, 檔名的命名原則與 SNAP package 相同，
+	您可以挑選離抓取的日期越近的版本。Lite Package適合想架陽春站、想看看
+	FB 3 的 source、只想升級 Source 的使用者。
+
+	Lite Package 的使用者請先閱讀其中的 bbs/LITE_PACKAGE 檔案。
+
+	優點：同 SNAP Package 優點，另外檔案小，抓取速度快。
+	缺點：同 SNAP Package 缺點及更新較慢的缺點，另外不附文件與 Utility，
+	      安裝與使用較不適合初次安裝者使用，稍有不便。
+
+
+2. 使用 CTM 升級(目前已停用)
+
+	FreeBSD 的使用者應該不陌生。每天 3:00am 系統會自動產生當天 CTM delta
+	檔，您可以抓不到 10K 的壓縮檔，然後使用 CTM 來自動 patch 你的程式碼。
+
+	可在 ftp://ftp.frirebird.org.tw/pub/Firebird/CTM 目錄底下抓到必要的
+	Base/Delta 檔。
+
+	用法:
+	
+	將 ctm 的檔案抓到某一目錄下，假設為 /tmp/ctm。然後建立一個目錄放 bbs
+	source，假設為 /home/bbs，在 /home/bbs 目錄下打以下指令：
+
+	% ctm -v /tmp/ctm/fb3src-1_BASE.gz
+
+	然後依照 ctm 的數字順序更新 source(fb3src-2 --> fb3src-3-> .... )，
+	更新好後，可以打 make; make update 輕鬆升級。
+
+	※你可以用 doc/examples/ctm.sh 一次更新多個 Delta 檔。
+
+	一般來說，ctm 必須從某個 base 檔開始，除非你確切知道某個 SNAP 版本對
+	應到某個 ctm 上，那麼你便可以從這個 ctm 開始。
+
+	PS. ctm 為 FreeBSD 內建程式，其他 OS 可能需自行安裝。
+
+	優點：除了第一次要抓 base 檔，檔案比較大以外，以後的 delta 檔大多都是
+	      10 KB 不到，適合網路速度較慢的使用者。
+	缺點：非 FreeBSD 使用者要使用 CTM 可能比較麻煩，因為這個程式是 FreeBSD
+	      內建的程式；另外使用 CTM 更新速度較 CVS 慢。
+
+
+3. 使用 cvs 升級
+
+	這裡介紹使用匿名登入 cvs 來升級，這是所有升級方法中，最能夠與 source 
+	tree 同步的方法了。
+
+	您的系統必要先安裝 cvs 這套系統，如果沒有，各大有收 GNU 的 ftp 站應該
+	都抓的到。
+
+	裝好 cvs 後，接著指定 CVSROOT 的環境參數，您也可以將這些設定寫到您的
+        .cshrc 或 .profile 中，這樣就不必每次登入都要重打一次。
+
+	o csh/tcsh 使用者
+
+	 % setenv CVSROOT ":pserver:anoncvs@cvs.firebird.org.tw:/home/CVS"
+
+	o bash 使用者
+
+	 % export CVSROOT=":pserver:anoncvs@cvs.firebird.org.tw:/home/CVS"
+
+
+	然後登入 cvs server
+
+	% cvs login
+
+	之後會詢問密碼，直接按 enter 跳過。
+	若沒有出現錯誤訊息，則已經順利登入了。
+
+	接著 checkout firebird 3.0 的 source tree，請輸入：
+
+	% cvs checkout bbs
+
+	.......
+
+	系統將會傳回整個 source tree。
+
+	爾後如果要 update source tree 的話，請執行：
+
+	% cvs update -d
+
+
+	優點：除了更新檔案, 還可以比對版本號碼，來查看兩個版本之間的差異，而
+	      且檔案更新的速度會比 CTM 快一點。
+        缺點：執行的速度有點慢，因為系統要比對 server 上與 local 端的檔案，
+	      不似 CTM 快速。
+	
+	※ cvs 說明文件可以參考 http://www.linux.org.tw/CLDP/other/cvs.html
+
+
+4. 使用 cvsup 升級
+
+	抱歉！目前尚未提供這方面的服務。
+
+
+以上就是升級 Firebird BBS 3.0 系列的幾種方法。您可以選擇適合您的方法來升級。
+
+
+若您有任何疑問, 請 mail: edwardc.bbs@bbs.seed.net.tw
+
+--
+Edward Chuang
+$Date: 2000/07/20 14:56:58 $

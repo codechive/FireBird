@@ -1,0 +1,8 @@
+關於 standalone telnetd
+
+
+	由於 Firebird 3.0 已經完全採用 bbsd 模式，因此已經不需要使用
+standslone telnetd 來作為進入 bbs 的工具，故我們不再提供此檔案。
+
+
+$Id: 00README,v 1.1 2000/07/26 07:47:09 edwardc Exp $

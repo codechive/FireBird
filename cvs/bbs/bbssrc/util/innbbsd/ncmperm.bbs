@@ -1,0 +1,15 @@
+# This is ncnperm.bbs, 為 innbbsd-NCM patch 的 Issuer 控制檔
+# 此檔為 FB3 預設自動安裝, 若想由 innbbsd 自動設定內容, 請刪除在 ~bbs/innd
+# 底下的 ncmperm.bbs 檔案. innbbsd '將會自動設定/產生此檔內容
+# 若不想接某 Issuer 的 NCM notify, 則將 Perm 欄位由 yes 改成 no, 反之亦然
+#
+# $Id: ncmperm.bbs,v 1.2 2000/07/25 09:03:08 edwardc Exp $
+# Issuer						Type	Perm
+news@news.civil.ncku.edu.tw		spam	yes
+nocem@newsgate.nctu.edu.tw		spam	yes
+news@news.nsysu.edu.tw			spam	yes
+news@news.math.nctu.edu.tw		spam	yes
+news@news.math.nctu.edu.tw		hinet	yes
+news@news.math.nctu.edu.tw		seednet	yes
+news@news.math.nctu.edu.tw		tkubbs	yes
+news@leeym.dhs.org				spam	yes

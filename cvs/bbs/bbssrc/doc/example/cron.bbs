@@ -1,0 +1,36 @@
+#
+# Crontab 範例檔，請做適當修改以適合您的系統。
+#
+# (Cron version -- $Id: cron.bbs,v 1.2 2000/03/07 13:13:46 skyo Exp $)
+#
+#
+# User /bin/sh to run the crontab
+SHELL=/bin/sh
+###### 文章轉信處理 ######
+#1,21,41 * * * * /home/bbs/innd/bbsnnrp netnews.tku.edu.tw /home/bbs/innd/news.tku.active > /dev/null 2>&1 &
+#30 * * * * /home/bbs/innd/bbsnnrp news.im.tku.edu.tw /home/bbs/innd/news.im.active > /dev/null 2>&1 &
+#47 * * * * /home/bbs/innd/bbsnnrp egg.mm.ntut.edu.tw /home/bbs/innd/firebird.active > /dev/null 2>&1 &
+2,22,32,42,52 * * * * /home/bbs/innd/bbslink /home/bbs
+###### 討論區定時砍信 ######
+30 23 * * * /home/bbs/bin/expire /home/bbs 10 3000 1500 > /dev/null 2>&1
+###### 上站人數統計 ######
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/bin/uptime >> /home/bbs/log/uptime.log
+57 * * * * /home/bbs/bin/averun /home/bbs/log/uptime.log;/bin/rm /home/bbs/log/uptime.log
+56 0 * * * /bin/cp /home/bbs/0Announce/bbslist/today /home/bbs/0Announce/bbslist/yesterday; /bin/rm /home/bbs/log/ave.src
+###### 上站人次統計 ######
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/bbs/bin/account
+0 0 * * * /bin/cp /home/bbs/0Announce/bbslist/countusr /home/bbs/0Announce/bbslist/countusr.last
+###### 積分排行榜 ######
+0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 1 > /home/bbs/0Announce/bbslist/toplogin
+0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 2 > /home/bbs/0Announce/bbslist/toppost
+0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 3 > /home/bbs/0Announce/bbslist/topstay
+0 0 * * * /home/bbs/bin/bbstop /home/bbs 50 4 > /home/bbs/0Announce/bbslist/topall
+###### 熱門話題 ######
+10 * * * * /home/bbs/bin/poststat /home/bbs
+###### 討論區使用率統計 ######
+15 * * * * /home/bbs/bin/usage 0 ; /home/bbs/bin/usage 1
+###### 本日新增帳號 ######
+0 * * * * /home/bbs/bin/newacct
+59 23 * * * /bin/mv /home/bbs/0Announce/bbslist/newacct.today /home/bbs/0Announce/bbslist/newacct.last
+###### 星座、生肖統計 #####
+0 * * * * /home/bbs/bin/horoscope

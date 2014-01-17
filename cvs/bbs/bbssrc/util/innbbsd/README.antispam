@@ -1,0 +1,175 @@
+bbsnnrp anti-spam enhanced patch usage, for Firebird BBS 3.0
+
+	black.list 檔說明	(1.27 板以後適用)
+
+	black.list 存放的是擋信的設定, 1.27 板後由 -l 指令指定 , 例如
+
+	bbsnnrp -l haha (.... .. ) 
+
+	則使用 black.list.haha 做為設定, 存放位置在 ~bbs/innd (預設)
+
+如果此檔不存在, 則使用內定 black.list.general 和未使用 -l 時相同, 如果此
+
+檔也不存在, 則不會有任何附加的限制.
+
+	[Tips] ** 1.27 板後加強的用法 **
+
+	1.27 板後增加了指定設定檔的功能, 也就是說, 可以同一個 news server
+
+使用多個 active file 的同時, 也使用多個設定檔, 使得設定方面更有彈性. 也可做到
+
+針對單一 news group 做限制或不限制的效果
+
+	例:
+
+	bbsnnrp -l news news news.active
+
+	接取正常 news group 時使用
+
+	bbsnnrp -l cancel news cancel.active
+
+	接取 control.cancel 時使用, 可以限制 control 的來源
+
+	bbsnnrp -l cna news cna.active
+
+	接取中央社(CNA)即時新聞使用, 可以限制只允許 news.CNA.com.tw 的新聞
+
+
+	.... 等, 可以自己依照需要自行設定 ....
+
+
+	以下是 black.list 語法使用說明:
+
+
+	[content]
+
+	Usage: content keyword
+
+	意義: 凡來源有 keyword 字眼的, 一律擋掉
+
+	應用: content pc
+	諸如 pc123.blah.com.tw pentiumPC.alibaba.edu 均被擋掉
+
+
+	[host]
+
+	Usage: host hostname
+
+	意義: 來源與 hostname *完全相符* 就擋掉
+
+	應用: host top2.ficnet.net.tw
+
+	說明: 應用於想檔某些機器, 但是又不打算擋整個 domain 時使用
+
+
+	[domain]
+
+	Usage: domain domainname
+
+	意義: 只要來源後幾個字跟 domain name 相符就擋掉
+
+	應用: domain hinet.net
+
+	說明: 這個不用說明, 擋掉它的理由有千百種 ;)
+	      擋掉一群機器用..
+
+
+	[only]
+
+	Usage: only <domain or hostname>
+
+	意義: 只允許某機器或某 domain 的文章, 其餘均擋掉 (一言堂..?)
+
+	應用: only edu.tw
+
+	說明: 只准來自 edu.tw 的文章, 其餘擋掉
+
+
+	[query] 	/* 1.30 板新增功能 */
+
+	Usage: query YES | NO
+
+	意義: 是否檢查來源的 hostname ( 預設為檢查 YES )
+
+	使用: query NO
+
+	說明: 之後的參數如為 NO 就不檢查來源 hostname 是否正確, 對於 DNS
+	      常常掛點或是速度慢的使用者可以設為 NO , 只使用其他設定值.
+
+
+	此外在指令前加上 # 或 ; 有 comment out 的效果, 此指令將被忽略不使用
+
+	Ex: ;host edwardc.ml.org
+	    #content dragon
+	
+	錯誤示範:
+	    ; host edwardc.ml.org
+
+
+	指令多重使用可以達到 OR 的效果 Ex:
+
+	only edu.tw
+	only news.CNA.com.tw
+
+	只允許來自 edu.tw *或* news.CNA.com.tw , 否則就擋掉
+
+
+	檢查的順序:
+
+	gethostbyXXXX -> only -> host -> domain -> content
+
+	其實搭配使用, 配合您實際的需求, 才能達到最大的效果, 所有的指令, 
+
+kerword, 都不分大小寫.
+
+	撰寫時請注意一最高原則: 一行只有兩個欄位, 有多的話會造成亂掉
+
+
+/*
+	後記
+*/
+
+	這個是吃宵夜時的構想, 花了 20 分鐘就有個雛形, 只用 gethostbyXXXX 檢查
+
+, 不過效果就已經令我很滿意了 :P , 後來加入 black.list 指令, 使得功能更加強化
+
+, 不過, 程式還是程式, 也是會有 "傷及無辜" , "filter不長眼" 的情形.. :P
+
+不過在 spammail 與 無辜者 得比例為 100:1 時, 真的只好對不起無辜者了 :P
+
+
+	有人建議我把 black.list 寫成跟 hosts.allow 差不多 .. hum .. 我倒覺得
+
+簡單就好, 如果有人真的需要用到這麼複雜的設定.. 那網路的環境就真的該檢討了..
+
+
+	一切還在測試中, 有問題請在 tw.bbs.admin.installbbs 發表 , 或在
+
+bbs.seed.net.tw 的 SYSOP 板發表, 或是 mail 給 edwardc@firebird.dhs.org
+
+都可以, 我會盡力解答的 :)
+
+/*
+	後記之後的後記
+*/
+
+	嗯, 因為某些原因, 我將不會在對此 patch 做維護了, 但是我仍然會維護到
+1.30 final 板, 在這之後, 我想我不會在針對這個 patch 來做修改或發展.
+
+	什麼時候會有 1.30 板? 老實說, 我也不知道, 我有很多 Project 要去做, 而
+且重心都不是在 UNIX Programming 上, 相較於以前, 我就是少了那麼一些時間在這上面.
+
+	這個 patch 本來認為最具"特色"的地方, 就是反查來源, 因為我沒有顧慮到
+極端環境下, dns request 的效率問題, 所以在某些情況下, 這個"特色"反到成了一大敗筆
+. 而也有一些人開始懷疑檔來源的正確性, 與可靠性, 這都讓我覺的這個程式雖然
+還看起來小有效果, 但是整體上卻不及格 :(
+
+	不知道有那位想接小弟這個爛攤子?! :p .. 如果有人有意繼續維護這個 patch
+, 可以跟我聯絡.
+
+	最後, 感謝所有與此 Project 有關的人, 與這個 patch 的愛用者, bug reporter
+, 謝謝你們.
+
+
+edwardc, Sep 22, 1998
+$Id: README.antispam,v 1.1 2000/01/15 01:45:34 edwardc Exp $
